@@ -1,9 +1,21 @@
 import RestaurantCard from "./RestaurantCard";
-import { resList } from "../public/reslist";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Body = () => {
-  const [restaurants, setRestaurants] = useState(resList);
+  const [restaurants, setRestaurants] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const data = await fetch("https://www.eatsure.com/v1/api/get_restaurants");
+    const json = await data.json();
+    const restauratList = json.data.data;
+    console.log(json.data.data);
+    setRestaurants(restauratList);
+  };
+
   return (
     <div className="body">
       <div className="search">
@@ -14,7 +26,7 @@ const Body = () => {
         <button
           className="top-rated"
           onClick={() => {
-            const filteredList = restaurants.filter((res) => res.info.avgRating >= 4.5);
+            const filteredList = restaurants.filter((res) => res.sequence * 50 >= 1600);
             setRestaurants(filteredList);
           }}>
           Top Rated
@@ -22,7 +34,7 @@ const Body = () => {
       </div>
       <div className="restaurant-container">
         {restaurants.map((res) => (
-          <RestaurantCard key={res.info.id} resData={res.info} />
+          <RestaurantCard key={res.brand_id} resData={res} />
         ))}
       </div>
     </div>
